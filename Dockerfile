@@ -11,7 +11,7 @@ RUN dpkg --add-architecture i386 && \
 	
 COPY bin/cod4x18_dedrun .
 #RUN chown cod:cod bin/cod4x18_dedrun
-RUN chmod +x bin/cod4x18_dedrun
+RUN chmod +x ./cod4x18_dedrun
 
 ENTRYPOINT /bin/bash && ./cod4x18_dedrun +set net_port 28961 +map mp_killhouse
 
