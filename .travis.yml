@@ -1,4 +1,13 @@
+sudo: required
 language: cpp
+
+env:
+  global:
+    - secure: "WQjzmsodJZzVeTbBxc0IZC8VWiXdbyIXk6M7CVq826So2W7sCDVjiJMDEEnZso2G5KRvNTwrR4/LBaFpZkvelGtzzE/UEAv74Zerc1nhicNqvFFicpepo+jCb3mTYvLn2nx3o4hEIf1tg124ARSACMbi/aze1X//Mvequh8i2md4r1OeQSIAHltS1z7PtD8aujprBRnSrglikf8Oufsh6dXLZSmKk84IzGwKcDnfidYkj1ZKhyb2L0Ufyu1uWui1BTkq+VuhjVxzBLpMOjoU2gyvX795yGjQc5erDh020+Kb0aYLnhkmUAMDuX6Cg2GO8zmQLrLyi4H/uQk/FmfNW2eD1Vx1yiAdRkyKYmR7VdstWssdNx0A678awNCGK41vti0JR7Z95hG+1ublUDTaJfA5bXXq36Lf67YcWXjVKGZSBIf1KDDhsTnwR8v1Wz/hVluyanx7We5qG7BISapvJKxIh4SzWpymv/SEgsgBgQyB6IHtkF1uPrdidJug3XCaznD93sqoQ7xmNk58Thz3c+TjJYiN4KWEqxkPfx+NTzjgSEyoPE7WjlmhLmLAuER0uLcC2bKojdv72r//V4h6uY+roBlShLGtfkblHuHhV3J+WwaUAsndopBOgs1OFjXv7d18ZqNNVriv80W+fBDwF6wCaR39R2SKldG7miXHBlM="
+    - secure: "P0dxc7eUcZponfmdAtrW29srR9JGxJXtLsMsFuYoF3D7PtRuJyH0uqnJaWbxbGCMzqNBHTfvEF+CeqclD7Q0Rv4gKCwff+NXYuddedNZxpc+Qzg8DBDvXCquXqVYuDql24gNDXxmmnujvmbgdBwqgQaz2O6xG9o/zYZuT2lbe1RuVCf5DTE81tCbPRFgGgi0xkuyrNmmLiVYQ8p9Kdn/erz1n3Gos76sDZbZfoR1rDB3/wyIxX7bvp7PObF6r8Gjio1ZCYT7brMuqv7eqTnYrc2KaBJHnqnzcDMCzBmcnhmKUxK01IWu9zeMuTsZ+pF49eDzpOL+BbsGvlHSXNihStg1smcsgGQsyvTagWv3ETIoL3HuB/w4PR/siNOiDyjFQ7rOnNuOE3qsFw0nppiwHLIeTA+V9IqmkQxWF0aCdlemfecjeKUvKULqa9Wx0Q/dcP2ExgpHbAkebtH6EdjTmRURRzFw1rtYxZf/K506F68+g58/b/5ElUjLF5HQPQq9A9xQXTMeLxJW+0zVc9qgA3NcQnZMxHJebga+zfbMwsKUN2BV5AYmfHSf8uDo8vRkM/bD5MCIIZQrCUjO5+cEKnQnpWzDEzVLjR7lX4yjFzWJ4gYpEBrGsjhGyZJxb7A/VH6iJUNbAUxeBv5ZSfZ3IEmY78DkVPwj/A+o0fTjl74="
+
+services:
+ - docker
 
 branches:
   only:
@@ -6,15 +15,6 @@ branches:
    - refactoring
 
 before_install:
-  # hack for broken package, https://github.com/travis-ci/travis-ci/issues/6588
-  # - "sudo add-apt-repository --remove 'http://us-central1.gce.archive.ubuntu.com/ubuntu/ main restricted'"
-  # - "sudo add-apt-repository --remove 'http://us-central1.gce.archive.ubuntu.com/ubuntu/ universe'"
-  # - "sudo add-apt-repository --remove 'http://us-central1.gce.archive.ubuntu.com/ubuntu/ multiverse'"
-  # - "sudo add-apt-repository http://archive.ubuntu.com/ubuntu/"
-  # - "sudo add-apt-repository 'http://archive.ubuntu.com/ubuntu/ universe'"
-  # - "sudo add-apt-repository 'http://archive.ubuntu.com/ubuntu/ multiverse'"
-  # - "sudo apt-get -qq update"
-  
   - arch
   - sudo ls /etc/dpkg/dpkg.cfg.d/
   - sudo sh -c "echo 'foreign-architecture i386' > /etc/dpkg/dpkg.cfg.d/multiarch"
@@ -37,6 +37,15 @@ script:
   - cd plugins/warn && chmod +x makedll.sh && ./makedll.sh && cd ../..
   # - cd plugins/antispam && chmod +x makedll.sh && ./makedll.sh && cd ../..
   # missing: webapibanlist, 
+  
+  docker build -t cod4x/server .
+  
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+    docker push cod4x/server;
+    fi
+  
 deploy:
   skip_cleanup: true
   provider: releases
