@@ -38,7 +38,7 @@ script:
   # - cd plugins/antispam && chmod +x makedll.sh && ./makedll.sh && cd ../..
   # missing: webapibanlist, 
   
-  - docker build -t d4edalus/cod4x-server .
+  - docker build -t d4edalus/cod4x_server .
   
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
