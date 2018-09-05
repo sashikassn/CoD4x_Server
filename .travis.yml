@@ -13,6 +13,7 @@ branches:
   only:
    - master
    - refactoring
+   - dev_newarch
 
 before_install:
   - arch
